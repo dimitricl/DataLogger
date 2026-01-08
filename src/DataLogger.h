@@ -1,10 +1,8 @@
 /**
  * DataLogger.h
- * 
- * Module de journalisation pour système de barrière de parking
- * Gère l'enregistrement des données sur carte SD avec rotation de fichiers
- * 
- * Auteurs : Claverie Dimitri, Peux Axel
+ * * Module de journalisation pour systeme de barriere de parking
+ * Gere l'enregistrement des donnees sur carte SD avec rotation de fichiers
+ * * Auteurs : Claverie Dimitri, Peux Axel
  * Version : 0.2
  */
 
@@ -16,7 +14,7 @@
 #include <SPI.h>
 
 /**
- * Niveaux de priorité des messages de log
+ * Niveaux de priorite des messages de log
  */
 enum LogLevel {
     INFO,    ///< Information normale
@@ -26,105 +24,68 @@ enum LogLevel {
 
 /**
  * Classe DataLogger
- * 
- * Gère la journalisation des événements système sur carte SD
- * 
- * Exemple d'utilisation :
- * @code
- * DataLogger logger("system.log", 5);  // Fichier: system.log, CS pin: 5
- * 
- * if (logger.begin()) {
- *     logger.log("Système démarré", INFO);
- *     logger.log("Attention: seuil élevé", WARN);
- *     logger.log("Erreur critique détectée", ERROR);
- * } else {
- *     Serial.println("Impossible d'initialiser la SD");
- * }
- * @endcode
+ * * Gere la journalisation des evenements systeme sur carte SD
  */
 class DataLogger {
 public:
     /**
      * Constructeur
-     * 
-     * @param filename Nom du fichier de log (ex: "system.log")
-     * @param csPin Numéro de la broche CS (Chip Select) pour la SD
-     * 
-     * Exemple :
-     * DataLogger logger("data.log", 5);  // Pin 5 comme CS
+     * * @param filename Nom du fichier de log (ex: "system.log")
+     * @param csPin Numero de la broche CS (Chip Select) pour la SD
      */
     DataLogger(const char* filename, uint8_t csPin);
 
     /**
-     * Initialise la connexion à la carte SD
-     * 
-     * @return true si succès, false si la SD n'est pas détectée
-     * 
-     * Exemple :
-     * if (!logger.begin()) {
-     *     Serial.println("Erreur : carte SD non détectée");
-     * }
+     * Initialise la connexion a la carte SD via SPI
+     * * @return true si succes, false si echec
      */
     bool begin();
 
     /**
      * Enregistre un message dans le fichier de log
-     * 
-     * @param message Le message à enregistrer (String ou const char*)
-     * @param level Niveau de priorité (INFO, WARN, ou ERROR)
-     * 
-     * Le message sera formaté comme :
-     * HH:MM:SS [NIVEAU] message\n
-     * 
-     * Exemple :
-     * int sensorValue = analogRead(A0);
-     * logger.log("Valeur capteur : " + String(sensorValue), INFO);
-     * logger.log("Seuil dépassé !", WARN);
+     * * @param message Texte a enregistrer
+     * @param level Niveau de priorite (INFO, WARN, ou ERROR)
      */
     void log(const String& message, LogLevel level);
 
     /**
-     * Vérifie si la SD est initialisée et prête
-     * 
-     * @return true si prête, false sinon
-     * 
-     * Exemple :
-     * if (logger.isReady()) {
-     *     logger.log("SD OK", INFO);
-     * }
+     * Verifie si la SD est initialisee et prete
+     * * @return true si prete, false sinon
      */
     bool isReady() const;
 
     /**
-     * Retourne le nombre de fichiers créés lors des rotations
-     * 
-     * @return Index du fichier courant
+     * Retourne le nombre de fichiers crees lors des rotations
+     * * @return Index du fichier courant
      */
     int getFileIndex() const { return _fileIndex; }
 
     /**
-     * Retourne le nom du fichier actuellement utilisé
-     * 
-     * @return Pointeur vers le nom du fichier
+     * Retourne le nom du fichier actuellement utilise
+     * * @return Pointeur vers le nom du fichier
      */
     const char* getFilename() const { return _filename; }
 
 private:
     char* _filename;           ///< Nom du fichier de log
     uint8_t _csPin;            ///< Broche CS pour la SD
-    bool _ready;               ///< État de la SD
+    bool _ready;               ///< Etat de la SD
     int _fileIndex;            ///< Compteur pour rotation de fichiers
 
     /**
-     * Génère une chaîne formatée du temps écoulé
-     * Format : "HH:MM:SS"
+     * Genere une chaine formatee du temps ecoule
      */
     String getTimestamp();
 
     /**
-     * Convertit un LogLevel en chaîne de caractères
+     * Convertit l'enum LogLevel en String
      */
     String levelToString(LogLevel level);
+
+    /**
+     * Gere la rotation des fichiers si la taille depasse la limite
+     */
+    void rotateFileIfNeeded();
 };
 
-#endif // DATALOGGER_H
+#endif
